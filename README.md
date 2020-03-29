@@ -18,6 +18,7 @@ Because they effectively are the infectiousness of the disease.
 numpy
 pandas
 networkx
+matplotlib
 ```
 ### Notes
 Only tested in Python3
