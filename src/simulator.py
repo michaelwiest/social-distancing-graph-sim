@@ -159,7 +159,7 @@ class Simulator(object):
             while len(self.get_infected()) > 0:
                 self.step_simulation()
                 i += 1
-        print('Infection eradicated after {} steps'.format(i))
+        print('Simulation finished after {} steps'.format(i))
 
         # Store the information of the simulation.
         for i, sg in enumerate(self.sim_graphs):
@@ -170,11 +170,15 @@ class Simulator(object):
 
 
     def animate_infection(self,
-                          interval=0.2,
+                          interval=0.1,
+                          granularity=1,
                           keep_final=True):
         for i, sg in enumerate(self.sim_graphs):
             fig, ax = self.draw_graph(which_graph=sg)
-            ax.set_title('Time: {}'.format(i),
+            percent_infected = np.round(100.0 * (self.simulation_data.loc[i, 'num_infected'] /
+                                        self.simulation_data.loc[i].sum()), 3)
+
+            ax.set_title('Time: {}\n{}% Infected'.format(i, percent_infected),
                          fontsize=32,
                          color='gray')
             plt.show(block=False)
@@ -194,7 +198,7 @@ class Simulator(object):
         else:
             df_to_use = self.simulation_data[:, :num_steps]
         fig, ax = plt.subplots(1,
-                               figsize=(10, 10))
+                               figsize=(10, 7))
         ax.bar(range(df_to_use.shape[0]),
                 df_to_use['num_infected'].values,
                 # bottom=bottom,

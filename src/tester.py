@@ -3,7 +3,7 @@ from simulator import Simulator
 import matplotlib.pyplot as plt
 import networkx as nx
 
-GC = GraphConstructor(2000,
+GC = GraphConstructor(1000,
                      4,
                      0.8,
                      0.25,
@@ -14,7 +14,7 @@ GC.construct_graph()
 S = Simulator(GC.graph)
 S.prepare_simulation(2,
                      timesteps_for_recovery=21)
-S.simulate(num_steps=50)
+S.simulate(num_steps=None)
 S.animate_infection(interval=0.1, keep_final=False)
 S.show_stats()
 plt.show()
