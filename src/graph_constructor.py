@@ -2,10 +2,7 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 
-INFECTED_COLOR = 'red'
-ASYMPTOMATIC_COLOR = 'purple'
-
-class GraphSimulator(object):
+class GraphConstructor(object):
     def __init__(self,
                  N: int,  # number of people in graph,
                  cluster_size: int,  # Average number of people per cluster
@@ -14,8 +11,6 @@ class GraphSimulator(object):
                  out_cluster_transtion: float,  # Transmission probability out cluster
                  out_cluster_edge_mean: float, # Average number of out-of cluster edges.
                  out_cluster_edge_stdev: float, # Standard Deviations of edges out of cluster.
-                 in_group_connection_prob: float=1.0,
-                 symptomatic_prob: float=1.0
                  ):
         '''
         Docstring move above shit here.
@@ -27,11 +22,7 @@ class GraphSimulator(object):
         self.out_cluster_transition = out_cluster_transtion
         self.out_cluster_edge_mean = out_cluster_edge_mean
         self.out_cluster_edge_stdev = out_cluster_edge_stdev
-        self.symptomatic_prob = symptomatic_prob
 
-        self.simulation_data = pd.DataFrame(columns=['num_healthy',
-                                                     'num_infected',
-                                                     'num_recovered'])
         self._graph = None
 
         self.active_graph = None
@@ -67,11 +58,13 @@ class GraphSimulator(object):
         while len(clustered_nodes) < self.N:
             new_cluster_size = int(np.floor(np.random.normal(self.cluster_size,
                                                              self.cluster_stdev)))
+            new_cluster_size = max(0, new_cluster_size)
+            # print(unclustered_nodes)
             new_cluster_size = min(new_cluster_size, len(unclustered_nodes))
             new_cluster = np.random.choice(list(unclustered_nodes),
                                            size=new_cluster_size,
                                            replace=False).tolist()
-            # Update the membership of our new clusters.
+
             [unclustered_nodes.remove(nc) for nc in new_cluster]
             clustered_nodes.update(set(new_cluster))
             self.clusters.append(new_cluster)
@@ -106,37 +99,8 @@ class GraphSimulator(object):
         self._graph = nx.Graph()
         self._graph.add_nodes_from(list(range(self.N)),
                                    infected=False,
-                                   symptomatic=False)
+                                   symptomatic=False,
+                                   recovered=False,
+                                   infected_timestep=np.inf)
         self._construct_clusters()
         self._add_out_of_cluster_edges()
-
-    def draw(self):
-        pos = nx.spring_layout(self.graph)
-        nx.draw(self.graph, pos)
-        labs = {i: self.graph.nodes()[i]['cluster_number']
-                for i in range(len(self.graph.nodes()))}
-        nx.draw_networkx_labels(self.graph, pos, labels=labs)
-
-    def infect_node(self,
-                    node_number):
-        self.graph.nodes[node_number]['infected'] = True
-        self.graph.nodes[node_number]['symptomatic'] = False
-        coin_flip = np.random.uniform()
-        if coin_flip < self.symptomatic_prob:
-            self.graph.nodes[node_number]['symptomatic'] = True
-
-
-    def prepare_simulation(self,
-                           num_intially_infected):
-        self.active_graph = self.graph.copy()
-        to_infect = np.random.choice(list(self.graph.nodes()),
-                                     num_intially_infected,
-                                     replace=False)
-
-        print(to_infect)
-
-    def step(self):
-        pass
-
-    def simulate(self, num_steps):
-        pass
