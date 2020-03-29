@@ -24,6 +24,11 @@ Only tested in Python3
 
 
 ## Output
+After the simulation you can draw something like this that shows the infection status of all the nodes in the network:
+
+![Cluster size 8 Simulation](figures/graph.png)
+
+### Cluster size tuning
 By tuning the cluster_size we can see how the resultant timelines of infection are very different.
 
 When clusters are of size eight on average this is the result:
