@@ -1,20 +1,41 @@
 import networkx as nx
 import pandas as pd
 import numpy as np
+from typing import List
 
 class GraphConstructor(object):
     def __init__(self,
-                 N: int,  # number of people in graph,
-                 cluster_size: int,  # Average number of people per cluster
+                 N: int,
+                 cluster_size: float,
                  cluster_stdev: float,  # Standard Deviations of people per cluster
                  in_cluster_transition: float,  # Transmission probability in cluster
                  out_cluster_transtion: float,  # Transmission probability out cluster
                  out_cluster_edge_mean: float, # Average number of out-of cluster edges.
                  out_cluster_edge_stdev: float, # Standard Deviations of edges out of cluster.
                  ):
-        '''
-        Docstring move above shit here.
-        '''
+        """
+        Graph Constructor Class. This is used to simulate clusters of
+        people undergoing "social distancing."
+
+        During the construction clusters and edges are generated
+        using normal distributions about the provided means and stdevs
+        for each set of parameters.
+
+        Args:
+            N int: Total number of people in the graph.
+            cluster_size float: The average size of a cluster of people who are
+                                social-distancing together.
+            cluster_stdev float: the stdev of size of a cluster of people who
+                                are social-distancing together.
+            in_cluster_transition float: The probability of transmitting the
+                                         disease to those who are in your cluster.
+            out_cluster_transition float: The probability of transmitting the
+                                          disease to those who are NOT in your cluster.
+            out_cluster_edge_mean float: The average number of edges to nodes
+                                         outside of an individual node's cluster.
+            out_cluster_edge_stdev float: The stdev of number of edges to nodes
+                                         outside of an individual node's cluster.
+        """
         self.N = N
         self.cluster_size = cluster_size
         self.cluster_stdev = cluster_stdev
@@ -29,12 +50,24 @@ class GraphConstructor(object):
 
     @property
     def graph(self):
+        '''
+        The networkx graph object itself.
+
+        returns networkx.Graph
+        '''
         if self._graph is None:
             raise ValueError('Please call construct_graph.')
         return self._graph
 
     def _add_edges_for_new_cluster(self,
-                                   new_cluster):
+                                   new_cluster: List[int]):
+        '''
+        For a given cluster, connect all of the nodes with the appropriate
+        weights and label the appropriately.
+
+        Args:
+            new_cluster: List[int]: indices of nodes in self.graph.
+        '''
         # Generate all of the edges to add
         edges_to_add = [[tuple((new_cluster[i], new_cluster[j]))
                          for j in range(i + 1, len(new_cluster))]
@@ -48,6 +81,10 @@ class GraphConstructor(object):
     def _construct_clusters(self):
         '''
         Function for generating tightly connected clusters of edges.
+        The number of nodes per-cluster is sampled from a normal distribution
+        about the parameters:
+            self.cluster_size
+            self.cluster_stdev
         '''
         clustered_nodes = set()
         unclustered_nodes = set(self._graph.nodes())
@@ -59,31 +96,39 @@ class GraphConstructor(object):
             new_cluster_size = int(np.floor(np.random.normal(self.cluster_size,
                                                              self.cluster_stdev)))
             new_cluster_size = max(0, new_cluster_size)
-            # print(unclustered_nodes)
             new_cluster_size = min(new_cluster_size, len(unclustered_nodes))
             new_cluster = np.random.choice(list(unclustered_nodes),
                                            size=new_cluster_size,
                                            replace=False).tolist()
-
+            # Remove the new indices from the ste of unclustered nodes.
             [unclustered_nodes.remove(nc) for nc in new_cluster]
+            # Add new nodes to set of clustered ones.
             clustered_nodes.update(set(new_cluster))
+            # Record the cluster.
             self.clusters.append(new_cluster)
 
+            # Connect all of the nodes in the new cluster.
             self._add_edges_for_new_cluster(new_cluster)
             cluster_name_dict = {nn: {'cluster_number': cluster_number}
                                  for nn in new_cluster}
-            # cluster_name_dict = {cluster_name_dict}
+            # Label the cluster number of each cluster.
             nx.set_node_attributes(self.graph,
                                    cluster_name_dict)
             cluster_number += 1
 
     def _add_out_of_cluster_edges(self):
+        '''
+        For each cluster this function adds edges to nodes not in that cluster
+        using the parameters:
+            self.out_cluster_edge_mean
+            self.out_cluster_edge_stdev
+        '''
 
         for node in self._graph.nodes():
             num_new_edges = max(0, int(np.floor(np.random.normal(self.out_cluster_edge_mean,
                                              self.out_cluster_edge_stdev))))
-            # print(num_new_edges)
             neighbors = list(self._graph.neighbors(node)) + [node]
+            # List all potential new connections not in existing cluster.
             potential_new_neighbors = list(set(self.graph.nodes())
                                            - (set(neighbors)))
             new_neighbors = np.random.choice(potential_new_neighbors,
@@ -96,6 +141,9 @@ class GraphConstructor(object):
                                       )
 
     def construct_graph(self):
+        '''
+        Main function for constructing the graph object. 
+        '''
         self._graph = nx.Graph()
         self._graph.add_nodes_from(list(range(self.N)),
                                    infected=False,
