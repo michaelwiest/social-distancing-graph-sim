@@ -28,7 +28,10 @@ S = Simulator(GC.graph)
 S.prepare_simulation(num_initially_infected,
                      timesteps_for_recovery=timesteps_for_recovery)
 S.simulate(num_steps=None)
-# S.animate_infection(interval=0.1, granularity=5,
-#                     keep_final=True)
+
+# Uncomment this if you want to see the animation of
+# the infection spreading in the graph. It can be a bit slow though.
+# S.animate_infection(interval=0.1, granularity=5)
+
 S.show_stats()
 plt.show()
