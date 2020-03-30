@@ -7,11 +7,11 @@ class GraphConstructor(object):
     def __init__(self,
                  N: int,
                  cluster_size: float,
-                 cluster_stdev: float,  # Standard Deviations of people per cluster
-                 in_cluster_transition: float,  # Transmission probability in cluster
-                 out_cluster_transtion: float,  # Transmission probability out cluster
-                 out_cluster_edge_mean: float, # Average number of out-of cluster edges.
-                 out_cluster_edge_stdev: float, # Standard Deviations of edges out of cluster.
+                 cluster_stdev: float,
+                 in_cluster_transition: float,
+                 out_cluster_transtion: float,
+                 out_cluster_edge_mean: float,
+                 out_cluster_edge_stdev: float,
                  ):
         """
         Graph Constructor Class. This is used to simulate clusters of
@@ -27,10 +27,10 @@ class GraphConstructor(object):
                                 social-distancing together.
             cluster_stdev float: the stdev of size of a cluster of people who
                                 are social-distancing together.
-            in_cluster_transition float: The probability of transmitting the
-                                         disease to those who are in your cluster.
-            out_cluster_transition float: The probability of transmitting the
-                                          disease to those who are NOT in your cluster.
+            in_cluster_transition float: The probability of interacting with
+                                         a node in the shelter-group
+            out_cluster_transition float: The probability of interacting with
+                                          a node NOT in the shelter-group
             out_cluster_edge_mean float: The average number of edges to nodes
                                          outside of an individual node's cluster.
             out_cluster_edge_stdev float: The stdev of number of edges to nodes
@@ -142,7 +142,7 @@ class GraphConstructor(object):
 
     def construct_graph(self):
         '''
-        Main function for constructing the graph object. 
+        Main function for constructing the graph object.
         '''
         self._graph = nx.Graph()
         self._graph.add_nodes_from(list(range(self.N)),
