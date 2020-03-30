@@ -360,7 +360,8 @@ class Simulator(object):
                color=self.display_lookup['recovered']['color'],
                label='Recovered')
 
-        ax.legend(loc='upper right', fontsize=18)
+        ax.set_xlim(0, df_to_use.shape[0])
+        ax.legend(loc='upper right', fontsize=14)
         ax.set_ylabel('Number of People', fontsize=24)
         ax.set_xlabel('Timestep', fontsize=24)
         fig.tight_layout()

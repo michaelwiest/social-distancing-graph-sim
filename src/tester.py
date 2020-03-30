@@ -7,7 +7,7 @@ import networkx as nx
 # Parameters for the graph constructor
 # How many nodes (people) in the simulation.
 N = 1000
-cluster_size = 4
+cluster_size = 10
 cluster_stdev = 0.8
 in_cluster_transition = 0.9
 out_cluster_transition = 0.3
@@ -17,7 +17,8 @@ out_cluster_edge_stdev = 0.6
 # parameters for the pathogen object.
 r_0 = 0.05
 timesteps_for_recovery = 45
-symptomatic_prob = 0.05
+# What fraction of infections result in symptomatic infection.
+symptomatic_prob = 0.2
 
 # Parameters for the simulation.
 num_initially_infected = 2
