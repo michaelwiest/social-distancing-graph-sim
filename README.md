@@ -20,9 +20,9 @@ There are a variety of parameters that can be tuned. They are broken into three 
    - Things like interaction probability with nodes in and out of a given cluster.
    - Size of cluster and number of edges outside of a cluster.
  - Pathogen Parameters:
-  - Things like R_0, time to recovery, and the probability of being symptomatic.
+   - Things like R_0, time to recovery, and the probability of being symptomatic.
  - Simulation Parameters:
-  - Things like number of nodes initially infected.
+   - Things like number of nodes initially infected.
 
 
 ### Dependencies
