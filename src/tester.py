@@ -7,7 +7,7 @@ import networkx as nx
 # Parameters for the graph constructor
 # How many nodes (people) in the simulation.
 N = 1000
-cluster_size = 10
+cluster_size = 5
 cluster_stdev = 0.8
 in_cluster_transition = 0.9
 out_cluster_transition = 0.3

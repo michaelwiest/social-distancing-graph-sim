@@ -401,7 +401,12 @@ class Simulator(object):
                                alpha=0.8,
                                edgecolors='white'
                                )
+        edge_types = [which_graph.get_edge_data(*ne)['type'] for ne in which_graph.edges]
+        edge_colors = ['black' if e == 'in_cluster' else 'gray'
+                       for e in edge_types]
+
         nx.draw_networkx_edges(which_graph,
-                               self.drawing_positions)
+                               self.drawing_positions,
+                               edge_color=edge_colors)
 
         return fig, ax
