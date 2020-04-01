@@ -47,11 +47,11 @@ S.simulate(num_steps=None)
 
 # Uncomment this if you want to see the animation of
 # the infection spreading in the graph. It can be a bit slow though.
-# num_frames = 25
-# granularity = max(1, int(len(S.sim_graphs) / num_frames))
-# S.animate_infection(interval=0.1,
-#                     granularity=granularity,
-#                     keep_final=True)
+num_frames = 25
+granularity = max(1, int(len(S.sim_graphs) / num_frames))
+S.animate_infection(interval=0.1,
+                    granularity=granularity,
+                    keep_final=True)
 
 S.show_stats()
 plt.show()
