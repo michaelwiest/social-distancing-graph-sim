@@ -52,6 +52,19 @@ class Simulator(object):
                                                'alpha': 0.8,
                                                'name': 'Symptomatic'},
                                }
+    @property
+    def max_percent_infected(self):
+        num_nodes = self.active_graph.number_of_nodes()
+        symp = 100.0 * self.simulation_data['num_symptomatic'].values / num_nodes
+        asymp = 100.0 * self.simulation_data['num_asymptomatic'].values / num_nodes
+        return np.max(symp + asymp)
+
+    @property
+    def max_infected_timepoint(self):
+        num_nodes = self.active_graph.number_of_nodes()
+        symp = self.simulation_data['num_symptomatic'].values / num_nodes
+        asymp = self.simulation_data['num_asymptomatic'].values / num_nodes
+        return np.argmax(symp + asymp)
 
     def get_node_statuses(self,
                           which_graph=None):
@@ -330,40 +343,53 @@ class Simulator(object):
 
         bottom = [0] * df_to_use.shape[0]
 
+        num_nodes = self.active_graph.number_of_nodes()
+        symp = 100.0 * df_to_use['num_symptomatic'].values / num_nodes
+        asymp = 100.0 * df_to_use['num_asymptomatic'].values / num_nodes
+        healthy = 100.0 * df_to_use['num_healthy'].values / num_nodes
+        recovered = 100.0 * df_to_use['num_recovered'].values / num_nodes
+        max_infected = self.max_percent_infected
+        max_loc = self.max_infected_timepoint
+
         ax.bar(range(df_to_use.shape[0]),
-               df_to_use['num_symptomatic'].values,
+               symp,
                width=1,
                color=self.display_lookup['symptomatic']['color'],
                label=self.display_lookup['symptomatic']['name'])
-        bottom += df_to_use['num_symptomatic'].values
+        bottom += symp
 
         ax.bar(range(df_to_use.shape[0]),
-               df_to_use['num_asymptomatic'].values,
+               asymp,
                width=1,
                bottom=bottom,
                color=self.display_lookup['asymptomatic']['color'],
                label=self.display_lookup['asymptomatic']['name'])
-        bottom += df_to_use['num_asymptomatic'].values
+        bottom += asymp
 
         ax.bar(range(df_to_use.shape[0]),
-               df_to_use['num_healthy'].values,
+               healthy,
                width=1,
                bottom=bottom,
                color=self.display_lookup['uninfected']['color'],
                label='Uninfected')
+        bottom += healthy
 
-        bottom += df_to_use['num_healthy'].values
         ax.bar(range(df_to_use.shape[0]),
-               df_to_use['num_recovered'].values,
+               recovered,
                width=1,
                bottom=bottom,
                color=self.display_lookup['recovered']['color'],
                label='Recovered')
 
         ax.set_xlim(0, df_to_use.shape[0])
-        ax.legend(loc='upper right', fontsize=14)
-        ax.set_ylabel('Number of People', fontsize=24)
+        ax.set_ylabel('Percent of People', fontsize=24)
         ax.set_xlabel('Timestep', fontsize=24)
+        ax.set_title('Max Infected: {}%'.format(np.round(max_infected)))
+        ax.axvline(max_loc, color='white',
+                   ls=':',
+                   lw=2,
+                   label='Max Infection\nTime: {}'.format(max_loc))
+        ax.legend(loc='upper right', fontsize=14)
         fig.tight_layout()
         return fig, ax
 

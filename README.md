@@ -50,15 +50,15 @@ The graph can be visualized as such, where red nodes denote an infection (below 
 ### Cluster size tuning
 By tuning the cluster_size we can see how the resultant timelines of infection are very different.
 
-When clusters are of size __eight__ on average this is the result:
-![Cluster size 8 Simulation](figures/cluster_8.png)
+When clusters are of size __twelve__ on average this is the result:
+![Cluster size 12 Simulation](figures/cluster_12.png)
 
-Where at max approximately __65%__ of population is infected.
+Where at max __40%__ of population is infected.
 
 
 However, if we reduce the average cluster size to __five__, then we get this.
 ![Cluster size 5 Simulation](figures/cluster_5.png)
 
-Where at the max only about __40%__ of the population is infected.
+Where at the max only about __22%__ of the population is infected.
 
 Now that's what I call flattening the curve.
