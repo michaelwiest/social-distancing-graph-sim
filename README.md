@@ -57,7 +57,7 @@ Where at max __40%__ of population is infected.
 
 
 However, if we reduce the average cluster size to __five__, then we get this.
-![Cluster size 5 Simulation](figures/cluster_5.png)
+![Cluster size 5 Simulation](figures/cluster_5_new.png)
 
 Where at the max only about __22%__ of the population is infected.
 
