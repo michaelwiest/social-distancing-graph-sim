@@ -12,6 +12,7 @@ class GraphConstructor(object):
                  out_cluster_transtion: float,
                  out_cluster_edge_mean: float,
                  out_cluster_edge_stdev: float,
+                 max_number_of_edges: int=None
                  ):
         """
         Graph Constructor Class. This is used to simulate clusters of
@@ -35,6 +36,11 @@ class GraphConstructor(object):
                                          outside of an individual node's cluster.
             out_cluster_edge_stdev float: The stdev of number of edges to nodes
                                          outside of an individual node's cluster.
+            max_number_of_edges int: The maximum number of edges in the graph.
+                                     This is used to normalize comparisons
+                                     between graphs with different cluster sizes,
+                                     because as the cluster size grows so does the
+                                     number of edges.
         """
         self.N = N
         self.cluster_size = cluster_size
@@ -43,6 +49,7 @@ class GraphConstructor(object):
         self.out_cluster_transition = out_cluster_transtion
         self.out_cluster_edge_mean = out_cluster_edge_mean
         self.out_cluster_edge_stdev = out_cluster_edge_stdev
+        self.max_number_of_edges = max_number_of_edges
 
         self._graph = None
 
@@ -115,6 +122,23 @@ class GraphConstructor(object):
             nx.set_node_attributes(self.graph,
                                    cluster_name_dict)
             cluster_number += 1
+
+        if self.max_number_of_edges is not None:
+            self._prune_extra_edge()
+
+    def _prune_extra_edge(self):
+        edges = self.graph.edges
+        num_edges_initially = self.graph.number_of_edges()
+        num_to_remove = max(0, num_edges_initially - self.max_number_of_edges)
+        choices = np.random.choice(list(range(len(edges))),
+                                   size=num_to_remove,
+                                   replace=False)
+        to_remove = np.array(edges)[choices]
+        to_remove = [tuple(tr) for tr in to_remove]
+        self.graph.remove_edges_from(to_remove)
+        print('Went from {} to {} edges after pruning.'.format(num_edges_initially,
+                                                               self.graph.number_of_edges()))
+
 
     def _add_out_of_cluster_edges(self):
         '''

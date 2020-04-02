@@ -13,6 +13,10 @@ in_cluster_transition = 0.9
 out_cluster_transition = 0.3
 out_cluster_edge_mean = 1.1
 out_cluster_edge_stdev = 0.6
+# This is to control for the fact that has cluster size increases
+# so does the number of edges in the graph. This makes a more fair
+# apples-to-apples comparison possible.
+max_number_of_edges = 1500
 
 # parameters for the pathogen object.
 r_0 = 0.05
@@ -35,7 +39,8 @@ GC = GraphConstructor(N,
                       in_cluster_transition,
                       out_cluster_transition,
                       out_cluster_edge_mean,
-                      out_cluster_edge_stdev)
+                      out_cluster_edge_stdev,
+                      max_number_of_edges=max_number_of_edges)
 GC.construct_graph()
 
 S = Simulator(GC.graph, pathogen)
