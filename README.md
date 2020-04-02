@@ -10,7 +10,11 @@ While it is inevitable that you will likely interact with some people distantly 
 
 Some examples of changing `cluster_size` and its impact on infection can be seen in [Output](#output) below.
 
+## Installation
+`pip install -r requirements.txt`
+
 ## Usage
+
 `python tester.py`
 
 Within that script there are configurable parameters for modeling.
